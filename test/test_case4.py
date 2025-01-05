@@ -1,4 +1,5 @@
 import pytest
+import allure
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -15,17 +16,19 @@ def setup():
     yield driver
     driver.quit()
 
-def testcase4(setup):
+@allure.feature('Selección de idioma')
+@allure.story('Cambio diferentes idiomas')
+@pytest.mark.parametrize("language, expected_text", [
+    ("Español", "Ofertas desde"),
+    ("English", "Flight deals from"),
+    ("Français", "Offres de vols à partir de"),
+    ("Português", "Ofertas de")
+])
+def testcase4(setup,language,expected_text):
     driver = setup
     homepage = HomePage(driver)
-    homepage.set_language("Español")
-    homepage.validate_language("Español")
+    with allure.step(f"Seleccionar lenguaje {language}"):
+        homepage.set_language(language)
 
-    homepage.set_language("English")
-    homepage.validate_language("English")
-
-    homepage.set_language("Français")
-    homepage.validate_language("Français")
-
-    homepage.set_language("Português")
-    homepage.validate_language("Português")
+    with allure.step(f"Esperar que cargue la página y validar la existencia del texto {expected_text}"):
+        homepage.validate_language(language,expected_text)
