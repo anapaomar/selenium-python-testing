@@ -206,23 +206,13 @@ class HomePage:
         button = wait.until(EC.element_to_be_clickable(login_button_element))
         button.click()
 
-    def validate_language(self,language):
+    def validate_language(self,language,expected_text):
         title_div_text = (By.XPATH, "//div[@class='routes-lowest-price-header_title_text']//h2")
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(title_div_text))    
         title_div_text_element = self.driver.find_element(*title_div_text)
 
         language_selected_element = self.driver.find_element(By.XPATH, "//*[starts-with(@id, 'languageListTriggerId_')]")
         aria_label_value = language_selected_element.get_attribute("aria-label")
-        
-        expected_text = ""
-        if language == "Español":
-            expected_text = "Ofertas desde"
-        elif language == "English":
-            expected_text = "Flight deals from"
-        elif language == "Français":
-            expected_text = "Offres de vols à partir de"
-        elif language == "Português":
-            expected_text = "Ofertas de"
             
         assert title_div_text_element.text == expected_text, f"Se esperaba '{expected_text}', pero se encontró '{title_div_text_element.text}'"
         assert language in aria_label_value, f"Se esperaba que '{aria_label_value}' contuviera el idioma '{language}', pero no fue así."
