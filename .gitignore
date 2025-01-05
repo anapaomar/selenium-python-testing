@@ -1,0 +1,58 @@
+# Ignorar archivos compilados de Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignorar archivos de entornos virtuales
+venv/
+env/
+
+# Ignorar archivos de bases de datos locales
+*.db
+
+# Ignorar archivos de configuración específicos del entorno
+*.env
+
+# Ignorar archivos de configuración de IDE
+.idea/
+.vscode/
+
+# Ignorar archivos temporales de editor
+*~
+*.swp
+*.swo
+
+# Ignorar archivos de logs
+*.log
+
+# Ignorar archivos de dependencias
+*.egg-info/
+
+# Ignorar carpetas de caché generadas por Selenium
+selenium_cache/
+
+# Ignorar archivos específicos de Selenium (si usas WebDriver en el proyecto)
+*.log
+
+# Ignorar archivos de tests
+*.coverage
+*.hypothesis/
+
+# Ignorar informes de pruebas generados por herramientas como pytest, coverage, etc.
+htmlcov/
+.coverage/
+
+# Ignorar archivos comprimidos o temporales
+*.tar.gz
+*.zip
+*.tar.bz2
+*.rar
+*.7z
+
+# Ignorar archivos de configuración de herramientas de Python
+*.tox/
+*.nox/
+*.coverage/
+*.hypothesis/
+
+.vscode/
