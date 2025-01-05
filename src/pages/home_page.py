@@ -2,226 +2,245 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+from util.logger_config import setup_logger
 
 class HomePage:
+    """
+    Esta clase representa la página principal del sitio de reservas de vuelos.
+    """
     def __init__(self, driver):
         self.driver = driver   
+        self.logger = setup_logger()
+        self.wait = WebDriverWait(self.driver, 30)
     
     def set_language(self,language):
-        wait = WebDriverWait(self.driver, 30)
-        self.language_select = (By.XPATH, "//*[starts-with(@id, 'languageListTriggerId_')]")
-        language_select_element = self.driver.find_element(*self.language_select)
-        select = wait.until(EC.element_to_be_clickable(language_select_element))
-        select.click()
-       
-        self.language_button = (By.XPATH, f'//span[@class="button_label" and contains(text(), "{language}")]/parent::button')
-        language_button_element = self.driver.find_element(*self.language_button)
-        button = wait.until(EC.element_to_be_clickable(language_button_element))
-        button.click()
+        """
+        Establece el idioma de la página seleccionando el idioma especificado.
+
+        Parámetros:
+        language (str): El idioma que se desea establecer (por ejemplo, "Español").
+        """
+        language_select = (By.XPATH, "//*[starts-with(@id, 'languageListTriggerId_')]")
+        language_button = (By.XPATH, f'//span[@class="button_label" and contains(text(), "{language}")]/parent::button')
+        #Clicamos el select para escoger el lenguaje
+        language_select_element = self.wait.until(EC.element_to_be_clickable(language_select))
+        language_select_element.click()
+        #Seleccionamos el lenguaje
+        language_button_element = self.wait.until(EC.element_to_be_clickable(language_button))
+        language_button_element.click()
 
     def set_point_of_sale(self,country):
-        wait = WebDriverWait(self.driver, 30)
-        self.pos_select = (By.ID, "pointOfSaleSelectorId")
-        pos_select_element = self.driver.find_element(*self.pos_select)
-        pos_select_option = wait.until(EC.element_to_be_clickable(pos_select_element))
-        pos_select_option.click()
-       
-        self.pos_button = (By.XPATH, f'//span[@class="points-of-sale_list_item_label" and contains(text(), "{country}")]/parent::button')
-        pos_button_element = self.driver.find_element(*self.pos_button)
-        pos_option = wait.until(EC.element_to_be_clickable(pos_button_element))
-        pos_option.click()
+        """
+        Establece el POS especificado.
 
-        self.apply_pos_button = (By.XPATH,"//button[contains(@class,'points-of-sale_footer_action_button')]")
-        apply_pos_button_element = self.driver.find_element(*self.apply_pos_button)
-        apply_button = wait.until(EC.element_to_be_clickable(apply_pos_button_element))
-        apply_button.click()
+        Parámetros:
+        country (str): El país o región a seleccionar.
+        """
+        pos_select = (By.ID, "pointOfSaleSelectorId")
+        pos_button = (By.XPATH, f'//span[@class="points-of-sale_list_item_label" and contains(text(), "{country}")]/parent::button')
+        apply_pos_button = (By.XPATH,"//button[contains(@class,'points-of-sale_footer_action_button')]")
+        #Clicamos en el elemento para escoger el pos
+        pos_select_element = self.wait.until(EC.element_to_be_clickable(pos_select))
+        pos_select_element.click()
+        #Seleccionamos el pais
+        pos_button_element = self.wait.until(EC.element_to_be_clickable(pos_button))
+        pos_button_element.click()
+        #Aplicamos los cambios        
+        apply_pos_button_element = self.wait.until(EC.element_to_be_clickable(apply_pos_button))
+        apply_pos_button_element.click()
     
     def set_journey(self,type):
-        wait = WebDriverWait(self.driver, 10)
+        """
+        Establece el tipo de viaje (ida y vuelta o solo ida).
+
+        Parámetros:
+        type (str): El tipo de viaje (por ejemplo, "Round" para ida y vuelta o "One way" para solo ida).
+        """
         # Comprobamos el tipo de viaje y asignamos el ID correspondiente
         if "Round" in type:
-            print(f"Entra a Round")
+            self.logger.info(f"Entra a Round")
             option = 'journeytypeId_0'
         elif "One way" in type:
-            print(f"Entra a One way")
+            self.logger.info(f"Entra a One way")
             option = 'journeytypeId_1'
         else:
             raise ValueError(f"Tipo de viaje desconocido: {type}")
 
-        try:
-            # Encontramos el elemento
-            
-            self.journey_type_combo = (By.XPATH, f"//label[@for='{option}']")
-            journey_type_element = self.driver.find_element(*self.journey_type_combo)
+        try:#Buscamos el elemento label por su atributo for, haciendo uso del id obtenido anteriormente            
+            journey_type_combo = (By.XPATH, f"//label[@for='{option}']")
+            journey_type_element = self.driver.find_element(*journey_type_combo)
             
             if not journey_type_element.is_displayed():
-                print(f"El elemento con ID {option} no está visible.")
+                self.logger.info(f"El elemento con ID {option} no está visible.")
             elif not journey_type_element.is_enabled():
-                print(f"El elemento con ID {option} está deshabilitado.")
+                self.logger.info(f"El elemento con ID {option} está deshabilitado.")
             else:
                 # Esperamos hasta que el elemento esté clickeable
-                combo = wait.until(EC.element_to_be_clickable(journey_type_element))
-        
-                # Hacemos clic en el combo
-                combo.click()
-
-                # Esperamos un poco si es necesario para que la UI se actualice
-            
-
-                print(f"Tipo de viaje '{type}' seleccionado correctamente.")
-
+                combo = self.wait.until(EC.element_to_be_clickable(journey_type_element))
+                combo.click()      
+                self.logger.info(f"Tipo de viaje '{type}' seleccionado correctamente.")
         except Exception as e:
-            print(f"Error al intentar seleccionar el tipo de viaje '{type}': {e}")
+            self.logger.error(f"Error al intentar seleccionar el tipo de viaje '{type}': {e}")
 
     def select_origin(self,key_city):
-        wait = WebDriverWait(self.driver, 10)
+        """
+        Selecciona la ciudad de origen para el viaje.
 
-        self.origin_city1 = (By.XPATH,"//div[@id='originDiv']")
-        origin_element1 = self.driver.find_element(*self.origin_city1)
-        origin_text1 = wait.until(EC.element_to_be_clickable(origin_element1))
-        origin_text1.click()
+        Parámetros:
+        key_city (str): La ciudad de origen que se desea seleccionar.
+        """
+        origin_div = (By.XPATH,"//div[@id='originDiv']")
+        origin_input = (By.XPATH,"//div[@id='originDiv']//input[@class='control_field_input']")
+        specific_city = (By.ID,f"{key_city}")
 
-        self.origin_city = (By.XPATH,"//div[@id='originDiv']//input[@class='control_field_input']")
-        origin_element = self.driver.find_element(*self.origin_city)
-        origin_text = wait.until(EC.element_to_be_clickable(origin_element))
-        origin_text.clear()
-        origin_text.send_keys(key_city) 
+        #Dado que por defecto se tiene seleccionada una ciudad, para poder editar hay que dar clic previamente al div que contiene el input
+        origin_div_element = self.wait.until(EC.element_to_be_clickable(origin_div))
+        origin_div_element.click()
 
-        self.specific_city = (By.ID,f"{key_city}")
-        specific_city_element = self.driver.find_element(*self.specific_city)
-        city = wait.until(EC.element_to_be_clickable(specific_city_element))
-        city.click()
+        #Ahora sí digitamos el valor del origen que queremos        
+        origin_input_element = self.wait.until(EC.element_to_be_clickable(origin_input))
+        origin_input_element.clear()
+        origin_input_element.send_keys(key_city) 
+
+        #Seleccionamos la ciudad origen        
+        specific_city_element = self.wait.until(EC.element_to_be_clickable(specific_city))
+        specific_city_element.click()
 
 
-    def select_destination(self,key_city):
-            wait = WebDriverWait(self.driver, 10)
-            self.origin_city = (By.XPATH,"//div[@id='arrivalStationInputLabel']/following-sibling::input[@class='control_field_input']")
-            origin_element = self.driver.find_element(*self.origin_city)
-            origin_text = wait.until(EC.element_to_be_clickable(origin_element))
-            origin_text.send_keys({key_city})
+    def select_destination(self,key_city): 
+            """
+            Selecciona la ciudad de destino para el viaje.
 
-            self.specific_city = (By.ID,f"{key_city}")
-            specific_city_element = self.driver.find_element(*self.specific_city)
-            city = wait.until(EC.element_to_be_clickable(specific_city_element))
-            city.click()
+            Parámetros:
+            key_city (str): La ciudad de destino  que se desea seleccionar.
+            """          
+            destination_city = (By.XPATH,"//div[@id='arrivalStationInputLabel']/following-sibling::input[@class='control_field_input']")            
+            specific_city = (By.ID,f"{key_city}")
+            #digitamos el valor del destino
+            destination_city_element = self.wait.until(EC.element_to_be_clickable(destination_city))
+            destination_city_element.send_keys({key_city})
+            #Seleccionamos la ciudad destino            
+            specific_city_element = self.wait.until(EC.element_to_be_clickable(specific_city))
+            specific_city_element.click()
             
 
     def select_passengers(self,number_adult,number_teen,number_child,number_infant):
-        wait = WebDriverWait(self.driver, 10) 
-        #"//div[@id='originDiv']//input[@class='control_field_input']"
-        self.select_passenger = (By.XPATH,"//div[@class='pax-control']//button[@class='control_field_button']")
-        passenger_element = self.driver.find_element(*self.select_passenger)
-        select = wait.until(EC.element_to_be_clickable(passenger_element))
-        select.click()
+        """
+        Establece la cantidad de pasajeros (adultos, niños, etc.)
 
+        Parámetros:
+        number_adult (int): Cantidad de adultos a seleccionar
+        number_teen (int): Cantidad de jóvenes a seleccionar
+        number_child (int): Cantidad de niños a seleccionar
+        number_infant (int): Cantidad de infantes a seleccionar
+        """
+        select_passenger = (By.XPATH,"//div[@class='pax-control']//button[@class='control_field_button']")
+        button_plus_adult = (By.XPATH, "//input[@id='inputPax_ADT']/following::button[@class='ui-num-ud_button plus']")
+        button_plus_teen = (By.XPATH, "//input[@id='inputPax_TNG']/following::button[@class='ui-num-ud_button plus']")
+        button_plus_child = (By.XPATH, "//input[@id='inputPax_CHD']/following::button[@class='ui-num-ud_button plus']")
+        button_plus_infant = (By.XPATH, "//input[@id='inputPax_INF']/following::button[@class='ui-num-ud_button plus']")
+        input_adult = (By.XPATH,"//input[@id='inputPax_ADT']")        
+        input_teen = (By.XPATH,"//input[@id='inputPax_TNG']")        
+        input_child = (By.XPATH,"//input[@id='inputPax_CHD']")        
+        input_infant = (By.XPATH,"//input[@id='inputPax_INF']")
+        button_confirm = (By.XPATH,"//div[@id='paxControlSearchId']//button[@class='button control_options_selector_action_button']")
+        #Clicamos en el elemento para escoger la cantidad de pasajeros
+        passenger_element = self.wait.until(EC.element_to_be_clickable(select_passenger))
+        passenger_element.click()
+        #Validamos si el numero de adultos es mayor a 1 ya que por defecto se tiene seleccionado un adulto
         if number_adult > 1:
-            print("Entra a adultos")
-            self.button_plus_adult = (By.XPATH, "//input[@id='inputPax_ADT']/following::button[@class='ui-num-ud_button plus']")
-            button_plus_adult_element = self.driver.find_element(*self.button_plus_adult)
-            button__plus_adult_number = wait.until(EC.element_to_be_clickable(button_plus_adult_element))
+            self.logger.info(f"Se seleccionaran {number_adult} adultos")           
+            button_plus_adult_element = self.wait.until(EC.element_to_be_clickable(button_plus_adult))
             for _ in range(number_adult - 1):
-                button__plus_adult_number.click()
+                button_plus_adult_element.click()
                 time.sleep(1)
-
-            self.input_adult = (By.XPATH,"//input[@id='inputPax_ADT']")
-            input_adult_element = self.driver.find_element(*self.input_adult)
-            input_adult_number = wait.until(EC.element_to_be_clickable(input_adult_element)) 
-            input_adult_value = input_adult_number.get_attribute("value")
-            assert int(input_adult_value) == int(number_adult), f"El valor para adulto es incorrecto, se esperaba {number_adult}"
-        
+            #Se valida que se hayan seleccionado la cantidad correcta
+            input_adult_element = self.wait.until(EC.element_to_be_clickable(input_adult)) 
+            input_adult_value = input_adult_element.get_attribute("value")
+            assert int(input_adult_value) == int(number_adult), f"El valor para adulto es incorrecto, se esperaba {number_adult}"        
         else:
-            print("No se definen adultos para este test")
-
+            self.logger.info("No se definen adultos para este test")
+        #Validamos si el numero de jóvenes es mayor a 0
         if number_teen > 0:
-            print("Entra a teen")
-            self.button_plus_teen = (By.XPATH, "//input[@id='inputPax_TNG']/following::button[@class='ui-num-ud_button plus']")
-            button_plus_teen_element = self.driver.find_element(*self.button_plus_teen)
-            button__plus_teen_number = wait.until(EC.element_to_be_clickable(button_plus_teen_element))
+            self.logger.info(f"Se seleccionaran {number_teen} jóvenes")             
+            button_plus_teen_element = self.wait.until(EC.element_to_be_clickable(button_plus_teen))
             for _ in range(number_teen):
-                button__plus_teen_number.click()
+                button_plus_teen_element.click()
                 time.sleep(1)
-
-            self.input_teen = (By.XPATH,"//input[@id='inputPax_TNG']")
-            input_teen_element = self.driver.find_element(*self.input_teen)
-            input_teen_number = wait.until(EC.element_to_be_clickable(input_teen_element)) 
-            input_teen_value = input_teen_number.get_attribute("value")
-            assert int(input_teen_value) == int(number_teen), f"El valor joven es incorrecto, se esperaba {number_teen}"
-        
+            input_teen_element = self.wait.until(EC.element_to_be_clickable(input_teen)) 
+            input_teen_value = input_teen_element.get_attribute("value")
+            assert int(input_teen_value) == int(number_teen), f"El valor joven es incorrecto, se esperaba {number_teen}"        
         else:
-            print("No se definen jovenes para este test")
+            self.logger.info("No se definen jóvenes para este test")
 
         if number_child > 0:
-            print("Entra a child")
-            self.button_plus_child = (By.XPATH, "//input[@id='inputPax_CHD']/following::button[@class='ui-num-ud_button plus']")
-            button_plus_child_element = self.driver.find_element(*self.button_plus_child)
-            button__plus_child_number = wait.until(EC.element_to_be_clickable(button_plus_child_element))
+            self.logger.info(f"Se seleccionaran {number_child} niños")
+            button_plus_child_element = self.wait.until(EC.element_to_be_clickable(button_plus_child))
             for _ in range(number_child):
-                button__plus_child_number.click()
-                time.sleep(1)
-
-            self.input_child = (By.XPATH,"//input[@id='inputPax_CHD']")
-            input_child_element = self.driver.find_element(*self.input_child)
-            input_child_number = wait.until(EC.element_to_be_clickable(input_child_element)) 
-            input_child_value = input_child_number.get_attribute("value")
-            assert int(input_child_value) == int(number_child), f"El valor niño es incorrecto, se esperaba {number_child}"
-        
+                button_plus_child_element.click()
+                time.sleep(1)            
+            input_child_element = self.wait.until(EC.element_to_be_clickable(input_child)) 
+            input_child_value = input_child_element.get_attribute("value")
+            assert int(input_child_value) == int(number_child), f"El valor niño es incorrecto, se esperaba {number_child}"        
         else:
-            print("No se definen niños para este test")
+            self.logger.info("No se definen niños para este test")
 
         if number_infant > 0:
-            print("Entra a infant")
-            self.button_plus_infant = (By.XPATH, "//input[@id='inputPax_INF']/following::button[@class='ui-num-ud_button plus']")
-            button_plus_infant_element = self.driver.find_element(*self.button_plus_infant)
-            button__plus_infant_number = wait.until(EC.element_to_be_clickable(button_plus_infant_element))
+            self.logger.info(f"Se seleccionaran {number_infant} infantes")            
+            button_plus_infant_element = self.wait.until(EC.element_to_be_clickable(button_plus_infant))
             for _ in range(number_infant):
-                button__plus_infant_number.click()
+                button_plus_infant_element.click()
                 time.sleep(1)
-
-            self.input_infant = (By.XPATH,"//input[@id='inputPax_INF']")
-            input_infant_element = self.driver.find_element(*self.input_infant)
-            input_infant_number = wait.until(EC.element_to_be_clickable(input_infant_element)) 
-            input_infant_value = input_infant_number.get_attribute("value")
-            assert int(input_infant_value) == int(number_infant), f"El valor infante es incorrecto, se esperaba {number_infant}"
-        
+            input_infant_element = self.wait.until(EC.element_to_be_clickable(input_infant)) 
+            input_infant_value = input_infant_element.get_attribute("value")
+            assert int(input_infant_value) == int(number_infant), f"El valor infante es incorrecto, se esperaba {number_infant}"        
         else:
-            print("No se definen niños para este test")
-
-        self.button_confirm = (By.XPATH,"//div[@id='paxControlSearchId']//button[@class='button control_options_selector_action_button']")
-        button_confirm_element = self.driver.find_element(*self.button_confirm)
-        button = wait.until(EC.element_to_be_clickable(button_confirm_element)) 
-        button.click()
+            self.logger.info("No se definen infantes para este test")
+        
+        #Se confirma la asignación de cantidad de pasajeros
+        button_confirm_element = self.wait.until(EC.element_to_be_clickable(button_confirm)) 
+        button_confirm_element.click()
         
     def searchFlight(self):
-        wait = WebDriverWait(self.driver, 10) 
-        self.button_search = (By.ID,"searchButton")
-        button_search_element = self.driver.find_element(*self.button_search)
-        button = wait.until(EC.element_to_be_clickable(button_search_element)) 
-        button.click()
-        time.sleep(10)
+        """
+        Realiza la búsqueda de vuelos haciendo clic en el botón buscar.
+        """
+        button_search = (By.ID,"searchButton")
+        button_search_element = self.wait.until(EC.element_to_be_clickable(button_search)) 
+        button_search_element.click()
+        time.sleep(10)#Se hace una espera por el cambio de página. Esto es una mala practica
 
     def select_login_button(self):
-        wait = WebDriverWait(self.driver, 30)
-        self.login_button = (By.ID, "auth-component")
-        login_button_element = self.driver.find_element(*self.login_button)
-        button = wait.until(EC.element_to_be_clickable(login_button_element))
-        button.click()
+        """
+        Inicia el proceso de inicio de sesión.
+        """
+        login_button = (By.ID, "auth-component")
+        login_button_element = self.wait.until(EC.element_to_be_clickable(login_button))
+        login_button_element.click()
 
     def validate_language(self,language,expected_text):
-        title_div_text = (By.XPATH, "//div[@class='routes-lowest-price-header_title_text']//h2")
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(title_div_text))    
-        title_div_text_element = self.driver.find_element(*title_div_text)
+        """
+        Valida que el idioma seleccionado se haya aplicado correctamente.
 
+        Parámetros:
+        language (str): El idioma seleccionado.
+        expected_text (str): El texto esperado en el idioma seleccionado.
+        """
+        title_div_text = (By.XPATH, "//div[@class='routes-lowest-price-header_title_text']//h2")
+        title_div_text_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(title_div_text))    
         language_selected_element = self.driver.find_element(By.XPATH, "//*[starts-with(@id, 'languageListTriggerId_')]")
         aria_label_value = language_selected_element.get_attribute("aria-label")
             
         assert title_div_text_element.text == expected_text, f"Se esperaba '{expected_text}', pero se encontró '{title_div_text_element.text}'"
         assert language in aria_label_value, f"Se esperaba que '{aria_label_value}' contuviera el idioma '{language}', pero no fue así."
 
-        print(f"Correcta validación del idioma {language}")
+        self.logger.info(f"Correcta validación del idioma {language}")
 
     def validate_pos(self,capital_city):
+        """
+        Valida que el punto de venta esté seleccionado
+        """
         origin_button_code = (By.XPATH, "//button[@id='originBtn']//span[contains(@class,'ontrol_value-station-code')]")
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(origin_button_code)) 
-        origin_button_code_element = self.driver.find_element(*origin_button_code)
-
-        assert capital_city in origin_button_code_element.text, f"Se esperaba '{expected_text}', pero se encontró '{origin_button_code_element.text}'"
+        origin_button_code_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(origin_button_code)) 
+        
+        assert capital_city in origin_button_code_element.text, f"Se esperaba '{capital_city}', pero se encontró '{origin_button_code_element.text}'"

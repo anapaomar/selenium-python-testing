@@ -3,18 +3,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import time
+from util.logger_config import setup_logger
 
 class PassengerPage:
     def __init__(self, driver):
         self.driver = driver
+        self.logger = setup_logger()
+        self.wait = WebDriverWait(self.driver, 30)
 
     def fillin_passenger_form(self,passenger_list):
-        wait = WebDriverWait(self.driver, 30)
-        
+        """
+        Permite llenar el formulario de cada pasajero
+        """
+        #Por parametro se obtiene la lista de pasajeros y sus datos      
         for i, passenger in enumerate(passenger_list):
+            #Se obtiene un formulario por cada pasajero
             passenger_form = (By.XPATH, f"(//div[contains(@class, 'passenger_data_block')])[{i+1}]")
             passenger_form_element = self.driver.find_element(*passenger_form)
-
+            self.logger.info(f"Se completa información de {passenger['name']}")
+            #Se completa la información requerida
             #Gender
             select_gender = passenger_form_element.find_element(By.XPATH, ".//button[contains(@id,'IdPaxGender')]")
             select_gender.click()
@@ -67,12 +74,17 @@ class PassengerPage:
                 option_customer_program.click()
             except NoSuchElementException:
                 # Si el campo no existe, no hacemos nada o lo dejamos en blanco
-                print("El campo 'Programa de viajero frecuente' no está presente en este formulario.")
+                self.logger.info("El campo 'Programa de viajero frecuente' no está presente en este formulario.")
 
     def fillin_reservation_holder(self,prefix,phone_number,email):
+        """
+        PErmite llenar la información del titular de la reservación
+        """
+        #Se obtiene el formulario de contacto
         contact_data = (By.CLASS_NAME, "contact_data")
         contact_data_element = self.driver.find_element(*contact_data)
 
+        #Se llenan los datos
         select_prefix_number = contact_data_element.find_element(By.ID,"phone_prefixPhoneId")
         select_prefix_number.click()
         
@@ -84,12 +96,13 @@ class PassengerPage:
         field_email = contact_data_element.find_element(By.ID,"email")
         field_email.send_keys(email)
 
+        #Como se prueba en dos versiones del aplicativo diferente, en uno existe la confirmación del email, en otro no. Por eso se maneja try-catch
         try:
             field_confirm_email = contact_data_element.find_element(By.ID,"confirmEmail")
             field_confirm_email.send_keys(email)
         except NoSuchElementException:
-                # Si el campo no existe, no hacemos nada o lo dejamos en blanco
-                print("El campo 'confirmación de email' no está presente en este formulario.")
+            # Si el campo no existe, no hacemos nada o lo dejamos en blanco
+            self.logger.info("El campo 'confirmación de email' no está presente en este formulario.")
     
     def select_continue(self):
         wait = WebDriverWait(self.driver, 30)
