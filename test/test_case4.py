@@ -24,7 +24,7 @@ def setup():
     ("Français", "Offres de vols à partir de"),
     ("Português", "Ofertas de")
 ])
-def testcase4(setup,language,expected_text):
+def test_verificar_cambio_idioma(setup,language,expected_text):
     driver = setup
     homepage = HomePage(driver)
     with allure.step(f"Seleccionar lenguaje {language}"):

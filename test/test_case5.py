@@ -22,7 +22,7 @@ def setup():
     ("España", "MAD"),
     ("Chile", "SCL")
 ])
-def test_page_language(setup,country,capital_city):
+def test_verificar_cambio_pos(setup,country,capital_city):
     driver = setup    
     homepage = HomePage(driver)
     with allure.step(f"Seleccionar pais {country}"):
