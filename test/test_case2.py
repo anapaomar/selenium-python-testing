@@ -77,9 +77,9 @@ def test_booking_round_trip(setup):
             passengerspage.select_continue()
 
         with allure.step("No seleccionar servicios en la página de servicios"):
+            servicespage.select_service("Lounge")
             servicespage.select_continue()
 
-        #seatmappage.select_seat("economy")
         result_test('test_booking_one_way','PASS')
     except Exception as e:
         result_test('test_booking_one_way',f'FAIL: {str(e)}')
