@@ -11,21 +11,29 @@ A partir del uso de python y selenium, se realizan pruebas automatizadas a una p
 
 ## Requisitos previos
 1. Se instala la última versión de python desde la [página oficial](https://www.python.org/downloads/). En este caso se utilizó 3.13.1
+    - Este debe instalar también pip para gestionar dependencias.
 2. Necesitarás [git](https://git-scm.com/) para clonar el repositorio  
 3. Necesitarás un IDE. Desde la [página oficial](https://code.visualstudio.com/download) de visual studio, descargar la última versión para su sistema operativo. Puedes usar cualquier otro IDE de preferencia.
 
 ## Configuración
-1. Desde el IDE, abrir y seleccionar la opción "Clone Git Repository"
+1. Desde el IDE (VisualStudio), abrir y seleccionar la opción "Clone Git Repository"
 2. Especificar la url: https://github.com/anapaomar/selenium-python-testing e indicar el directorio de trabajo. 
-    También lo puedes hacer por comandos desde la terminal
+    También lo puedes hacer por comandos desde la terminal. Yo utilicé la terminal de powershell desde el propio IDE.
     ```bash
     git clone https://github.com/anapaomar/selenium-python-testing
-3. Desde el directorio del proyecto en local, crear un nuevo entorno virtual
+3. Desde la raiz del proyecto, crear un nuevo entorno virtual. 
     ```bash
-    python -m venv venv
+    python -m venv nombre_del_entorno
+    
 4. Activa el entorno virtual
+- En windows
     ```bash
-    .\venv\Scripts\activate 
+    .\nombre_del_entorno\Scripts\activate
+
+- En MacOS
+    ```bash
+    source nombre_del_entorno/bin/activate
+
 5. Instala las dependencias desde el archivo requirements.txt
     ```bash
     pip install -r requirements.txt
