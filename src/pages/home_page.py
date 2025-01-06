@@ -244,3 +244,31 @@ class HomePage:
         origin_button_code_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(origin_button_code)) 
         
         assert capital_city in origin_button_code_element.text, f"Se esperaba '{capital_city}', pero se encontró '{origin_button_code_element.text}'"
+
+    def select_option_nav_bar(self,option,url_submenu):
+        """
+        Permite seleccionar opciones de la barra de navecaión del header
+
+        Parametros:
+        option (str): se refiere a la opción del menú de la barra de navegación
+        url_submenu (str): se refiere a la opción del sub menú a elegir dentro de las opciones de cada menu
+        """
+        main_navegation_bar = (By.XPATH, "//nav[@class='main-header_nav-primary_nav']")
+        option_nav_bar_button = (By.XPATH, f"//span[contains(text(),'{option.strip()}')]")
+        submenu_option = (By.XPATH, f'//a[@href="{url_submenu}"]')
+
+        self.wait.until(EC.element_to_be_clickable(main_navegation_bar))
+        #Se selecciona la opción enviada por parámetro
+        option_nav_bar_button_element = self.wait.until(EC.element_to_be_clickable(option_nav_bar_button))
+        option_nav_bar_button_element.click()
+
+        self.logger.info(f"Se accede a la opción {option}")
+        #Se selecciona el submenú indicado        
+        submenu_option = (By.XPATH, f'//a[@href="{url_submenu}"]')       
+        submenu_option_element = self.wait.until(EC.element_to_be_clickable(submenu_option))
+        submenu_option_element.click()
+
+        self.logger.info(f"Se accede a la opción {url_submenu}")
+
+
+
