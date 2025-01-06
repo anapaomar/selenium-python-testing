@@ -16,3 +16,15 @@ def create_db():
 
     conn.commit()
     conn.close()
+
+def result_test(name, result):
+    conn = sqlite3.connect('resultados.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT INTO resultados (nombre, resultado)
+        VALUES (?, ?)
+    ''', (name, result))
+    
+    conn.commit()
+    conn.close()

@@ -1,6 +1,6 @@
 import pytest
 import allure
-import sqlite3
+from util.db_config import result_test
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,18 +23,6 @@ def setup():
     yield driver
     driver.quit()
 
-def result_test(name, result):
-    conn = sqlite3.connect('resultados.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO resultados (nombre, resultado)
-        VALUES (?, ?)
-    ''', (name, result))
-    
-    conn.commit()
-    conn.close()
-
 @allure.feature('Barra de navegación')
 @allure.story('Cambio diferentes opciones dentro del Navbar')
 @pytest.mark.parametrize("option_nav_bar,url_site, expected_url", [
@@ -55,7 +43,7 @@ def test_header_redirects(setup,option_nav_bar,url_site,expected_url):
 
         with allure.step(f"Validar la url {full_expected_url} del sitio y que la página carga correctamente"):
             base_page.validate_current_url(full_expected_url)
-            result_test('header_redirects','PASS')
+            result_test('test_header_redirects','PASS')
     except Exception as e:
-        result_test('header_redirects',f'FAIL: {str(e)}')
+        result_test('test_header_redirects',f'FAIL: {str(e)}')
         raise e

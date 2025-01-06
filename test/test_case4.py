@@ -1,9 +1,8 @@
 import pytest
 import allure
 import time
-import sqlite3
+from util.db_config import result_test
 from util.logger_config import setup_logger
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -27,18 +26,6 @@ def setup():
     logger.info("Cerrando el navegador")
     driver.quit()
 
-def result_test(name, result):
-    conn = sqlite3.connect('resultados.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO resultados (nombre, resultado)
-        VALUES (?, ?)
-    ''', (name, result))
-    
-    conn.commit()
-    conn.close()
-
 @allure.feature('Selección de idioma')
 @allure.story('Cambio diferentes idiomas')
 @pytest.mark.parametrize("language, expected_text", [
@@ -49,13 +36,13 @@ def result_test(name, result):
 ])
 def test_verificar_cambio_idioma(setup,language,expected_text):
     driver = setup
-    homepage = HomePage(driver)
+    home_page = HomePage(driver)
     try:
         with allure.step(f"Seleccionar lenguaje {language}"):
-            homepage.set_language(language)
+            home_page.set_language(language)
 
         with allure.step(f"Esperar que cargue la página y validar la existencia del texto {expected_text}"):
-            homepage.validate_language(language,expected_text)
+            home_page.validate_language(language,expected_text)
             result_test('test_verificar_cambio_idioma','PASS')
     except Exception as e:
         result_test('test_verificar_cambio_idioma',f'FAIL: {str(e)}')

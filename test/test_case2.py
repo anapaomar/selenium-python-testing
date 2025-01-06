@@ -1,16 +1,14 @@
 import pytest
 import allure
-import sqlite3
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager 
+from util.db_config import result_test
 from src.pages.home_page import HomePage
 from src.pages.flight_page import FlightPage
 from src.pages.passenger_page import PassengerPage
 from src.pages.service_page import ServicePage
-from src.pages.seatmap_page import SeatmapPage
-
 
 @pytest.fixture
 def setup():
@@ -23,45 +21,32 @@ def setup():
     yield driver
     driver.quit()
 
-def result_test(name, result):
-    conn = sqlite3.connect('resultados.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO resultados (nombre, resultado)
-        VALUES (?, ?)
-    ''', (name, result))
-    
-    conn.commit()
-    conn.close()
-
 @allure.feature('Reserva de vuelo de ida y vuelta')
 @allure.story('Realizar una reserva de vuelo de ida y regreso desde Colombia a España')
 def test_booking_round_trip(setup):
     driver = setup
-    homepage = HomePage(driver)
-    flightpage = FlightPage(driver)
-    passengerspage = PassengerPage(driver)
-    servicespage = ServicePage(driver)
-    seatmappage = SeatmapPage(driver)
+    home_page = HomePage(driver)
+    flight_page = FlightPage(driver)
+    passenger_page = PassengerPage(driver)
+    service_page = ServicePage(driver)
     try:
         with allure.step("Establecer idioma y punto de venta"):
-            homepage.set_language("English")
-            homepage.set_point_of_sale("Colombia")
+            home_page.set_language("English")
+            home_page.set_point_of_sale("Colombia")
         
         with allure.step("Seleccionar detalles del viaje"):
-            homepage.set_journey("Round")
-            homepage.select_origin("CTG")
-            homepage.select_destination("MAD")
-            homepage.select_passengers(1,1,1,1)
-            homepage.searchFlight()
+            home_page.set_journey("Round")
+            home_page.select_origin("CTG")
+            home_page.select_destination("MAD")
+            home_page.select_passengers(1,1,1,1)
+            home_page.searchFlight()
 
         with allure.step("Seleccionar precio y tipo de vuelo"):
-            flightpage.select_journey_price("One way")
-            flightpage.select_flight_type("light")
-            flightpage.select_journey_price("Return")
-            flightpage.select_flight_type("flex")
-            flightpage.select_continue()
+            flight_page.select_journey_price("One way")
+            flight_page.select_flight_type("light")
+            flight_page.select_journey_price("Return")
+            flight_page.select_flight_type("flex")
+            flight_page.select_continue()
 
         with allure.step("Llenar formulario de pasajeros"):
             passengers_list = [
@@ -70,19 +55,19 @@ def test_booking_round_trip(setup):
                 {'gender': 'F', 'name': 'Laura', 'lastname': 'Pérez'},
                 {'gender': 'M', 'name': 'Carlos', 'lastname': 'Pérez'}
             ]
-            passengerspage.fillin_passenger_form(passengers_list)
+            passenger_page.fillin_passenger_form(passengers_list)
         
         with allure.step("Llenar datos del titular de la reserva"):
-            passengerspage.fillin_reservation_holder("57","32545698","jperez@gmail.com")
-            passengerspage.select_continue()
+            passenger_page.fillin_reservation_holder("57","32545698","jperez@gmail.com")
+            passenger_page.select_continue()
 
         with allure.step("No seleccionar servicios en la página de servicios"):
-            servicespage.select_service("Lounge")
-            servicespage.select_continue()
+            service_page.select_service("Lounge")
+            service_page.select_continue()
 
-        result_test('test_booking_one_way','PASS')
+        result_test('test_booking_round_trip','PASS')
     except Exception as e:
-        result_test('test_booking_one_way',f'FAIL: {str(e)}')
+        result_test('test_booking_round_trip',f'FAIL: {str(e)}')
         raise e
 
 

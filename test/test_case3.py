@@ -1,6 +1,6 @@
 import pytest
 import allure
-import sqlite3
+from util.db_config import result_test
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -22,28 +22,16 @@ def setup():
     yield driver
     driver.quit()
 
-def result_test(name, result):
-    conn = sqlite3.connect('resultados.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO resultados (nombre, resultado)
-        VALUES (?, ?)
-    ''', (name, result))
-    
-    conn.commit()
-    conn.close()
-
 @allure.feature('Login y reserva de vuelo')
 @allure.story('Iniciar sesión y buscar vuelos desde Colombia a España')
 def test_login_UAT1(setup):
     driver = setup
-    homepage = HomePage(driver)
-    flightpage = FlightPage(driver)
-    loginpage = LoginPage(driver)
+    home_page = HomePage(driver)
+    flight_page = FlightPage(driver)
+    login_page = LoginPage(driver)
     try:
         with allure.step("Hacer clic en el botón de inicio de sesión"):
-            homepage.select_login_button()
+            home_page.select_login_button()
         
         with allure.step("Cambiar a la ventana de login"):
             driver.implicitly_wait(2)
@@ -51,26 +39,26 @@ def test_login_UAT1(setup):
             driver.switch_to.window(window_handles[-1])
 
         with allure.step("Rellenar el formulario de inicio de sesión"):
-            loginpage.fillin_login_form("21734198706","Lifemiles1")
+            home_page.fillin_login_form("21734198706","Lifemiles1")
         
         with allure.step("Regresar a la ventana principal"):
             driver.switch_to.window(window_handles[0])
 
         with allure.step("Configurar idioma y punto de venta"):
-            homepage.set_language("Français")
-            homepage.set_point_of_sale("France")
+            home_page.set_language("Français")
+            home_page.set_point_of_sale("France")
         
         with allure.step("Seleccionar detalles del viaje"):
-            homepage.set_journey("One way")
-            homepage.select_origin("CTG")
-            homepage.select_destination("MAD")
-            homepage.select_passengers(3,3,3,3)
-            homepage.searchFlight()
+            home_page.set_journey("One way")
+            home_page.select_origin("CTG")
+            home_page.select_destination("MAD")
+            home_page.select_passengers(3,3,3,3)
+            home_page.searchFlight()
 
         with allure.step("Seleccionar precio y tipo de vuelo"):
-            flightpage.select_journey_price("One way")
-            flightpage.select_flight_type("light")
-            flightpage.select_continue()
+            flight_page.select_journey_price("One way")
+            flight_page.select_flight_type("light")
+            flight_page.select_continue()
             result_test('test_login_UAT1','PASS')
     except Exception as e:
         result_test('test_login_UAT1',f'FAIL: {str(e)}')
