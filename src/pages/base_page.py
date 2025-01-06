@@ -28,21 +28,21 @@ class BasePage:
             elapsed_time = time.time() - start_time  # Calculamos el tiempo transcurrido
 
             if elapsed_time > max_wait_time:  # Si el tiempo máximo ha pasado, rompemos el ciclo
-                print(f"Tiempo máximo de espera alcanzado ({max_wait_time} segundos).")
+                self.logger.info(f"Tiempo máximo de espera alcanzado ({max_wait_time} segundos).")
                 break
 
             try:
                 # Esperar hasta que el div con la clase 'loading' no esté visible
                 loading_element = self.driver.find_element(By.CLASS_NAME, "loading")
                 if not loading_element.is_displayed():  # Si ya no está visible
-                    print("El cargador ha desaparecido.")
+                    self.logger.info("El avioncito ha desaparecido.")
                     break
                 else:
-                    print("Cargando... avioncito volando.")
+                    self.logger.info("Cargando... avioncito volando.")
                     
             except Exception as e:
                 # Si no se encuentra el elemento o alguna otra excepción, consideramos que se ha completado la carga
-                print(f"No se encontró el elemento de carga.")
+                self.logger.info(f"El avioncito ha desaparecido.")
                 break
             
             time.sleep(check_interval) 
