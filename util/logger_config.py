@@ -4,6 +4,9 @@ import logging
 def setup_logger():
     # Crear un logger
     logger = logging.getLogger("test_logger")
+    if logger.hasHandlers():
+        logger.handlers.clear()
+        
     logger.setLevel(logging.INFO)  # Configuramos el nivel de log deseado
 
     # Crear un manejador de consola para los logs
