@@ -247,7 +247,7 @@ class HomePage:
 
     def select_option_nav_bar(self,option,url_submenu):
         """
-        Permite seleccionar opciones de la barra de navecaión del header
+        Permite seleccionar opciones de la barra de navegación del header
 
         Parametros:
         option (str): se refiere a la opción del menú de la barra de navegación
@@ -271,4 +271,28 @@ class HomePage:
         self.logger.info(f"Se accede a la opción {url_submenu}")
 
 
+    def select_option_footer(self,num_column):
+        """
+        Permite seleccionar opciones de la barra de navegación del footer
 
+        Parametros:
+        num_column (int): como existen 4 columnas en el footer, se va a tomar un link de cada columna cuyo número llegue por parámetro
+        """
+        items_column_list = self.driver.find_elements(By.XPATH, f"//ul[@id='footerNavListId-{num_column}']/li")
+        href = ""
+        
+        for item_column in items_column_list:
+            # Verifica si el <span> con clase 'icon-external' está presente. Esto lo hago porque se deben tratar diferentes los que abren otra pesa de los que no.
+            external_icon = item_column.find_elements(By.XPATH, ".//span[contains(@class, 'icon-external')]")
+        
+            # Si no tiene el <span> con clase 'icon-external', hacer clic en el <a> y obtener el href
+            if not external_icon:
+                link = item_column.find_element(By.TAG_NAME, "a")
+                href = link.get_attribute("href")#Se obtiene el href para validar
+                self.logger.info(f"En la columna número {num_column}, se da click en el enlace con href: {href}")
+                link.click()
+                break #Solo se da clic en el primer elemento. Como es una lista, se rompe el ciclo para que no siga validando
+
+        return href
+       
+      
