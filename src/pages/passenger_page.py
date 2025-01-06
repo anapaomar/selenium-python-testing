@@ -2,13 +2,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-import time
+from src.pages.base_page import BasePage 
 from util.logger_config import setup_logger
 
 class PassengerPage:
     def __init__(self, driver):
         self.driver = driver
         self.logger = setup_logger()
+        self.base_page = BasePage(driver)  
         self.wait = WebDriverWait(self.driver, 30)
 
     def fillin_passenger_form(self,passenger_list):
@@ -110,4 +111,4 @@ class PassengerPage:
         continue_button_element = self.driver.find_element(*continue_button)
         button = wait.until(EC.element_to_be_clickable(continue_button_element))
         button.click()
-        time.sleep(50)
+        self.base_page.wait_while_exist_loading()

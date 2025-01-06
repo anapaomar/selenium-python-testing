@@ -1,8 +1,10 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import logging
+from src.pages.base_page import BasePage 
 
 logger = logging.getLogger(__name__)
 
@@ -14,19 +16,28 @@ class FlightPage:
     """
         
     def __init__(self, driver):
-        self.driver = driver  
+        self.driver = driver
+        self.base_page = BasePage(driver)  
     
-    def select_journey_price(self):
+    def select_journey_price(self,type):
         """
         Selecciona el primer precio disponible para el viaje.
         Espera hasta que el primer botón de precio sea clickeable y luego hace clic en él.
         """
         wait = WebDriverWait(self.driver, 30)
         #Se selecciona el primer precio que aparezca
-        price_button = (By.XPATH,"//button[contains(@class, 'journey_price_button')][1]")
-        journey_price_button_element = self.driver.find_element(*price_button)
-        button = wait.until(EC.element_to_be_clickable(journey_price_button_element))
-        button.click()
+        price_button = ""
+        self.base_page.wait_while_exist_loading()
+
+        if type == "One way":
+            price_button = (By.XPATH,"//button[contains(@class, 'journey_price_button')][1]")
+        else:
+            price_button = (By.XPATH,"//div[@id='journeysContainerId_1']//button[contains(@class, 'journey_price_button')][1]")
+
+        # Esperar a que el botón de precio sea clickeable
+        journey_price_button_element = wait.until(EC.element_to_be_clickable(price_button))
+        # Intentar hacer clic en el botón
+        journey_price_button_element.click()
 
     def select_flight_type(self,type):
         """
@@ -47,11 +58,11 @@ class FlightPage:
         para continuar con el proceso.
         """
         wait = WebDriverWait(self.driver, 30)
+        self.base_page.wait_while_exist_loading()
         edit_button = (By.CLASS_NAME,"journey-select_modifier-edit_button")
-        wait.until(EC.visibility_of_element_located(edit_button))
-        time.sleep(10) #Es la única forma que se me ocurre porque las anteriores no existen para esperar el botón continuar
+        wait.until(EC.visibility_of_element_located(edit_button))        
         continue_button = (By.XPATH, "//button[contains(@class, 'page_button')]")
         continue_button_element = self.driver.find_element(*continue_button)
         button = wait.until(EC.element_to_be_clickable(continue_button_element))
         button.click()
-        time.sleep(10)
+        self.base_page.wait_while_exist_loading()

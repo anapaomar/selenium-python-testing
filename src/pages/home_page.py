@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from src.pages.base_page import BasePage 
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from util.logger_config import setup_logger
@@ -11,6 +12,7 @@ class HomePage:
     def __init__(self, driver):
         self.driver = driver   
         self.logger = setup_logger()
+        self.base_page = BasePage(driver)
         self.wait = WebDriverWait(self.driver, 30)
     
     def set_language(self,language):
@@ -20,6 +22,7 @@ class HomePage:
         Parámetros:
         language (str): El idioma que se desea establecer (por ejemplo, "Español").
         """
+        self.base_page.wait_while_exist_loading()
         language_select = (By.XPATH, "//*[starts-with(@id, 'languageListTriggerId_')]")
         language_button = (By.XPATH, f'//span[@class="button_label" and contains(text(), "{language}")]/parent::button')
         #Clicamos el select para escoger el lenguaje
@@ -28,6 +31,8 @@ class HomePage:
         #Seleccionamos el lenguaje
         language_button_element = self.wait.until(EC.element_to_be_clickable(language_button))
         language_button_element.click()
+        self.base_page.wait_while_exist_loading()
+        
 
     def set_point_of_sale(self,country):
         """
@@ -48,6 +53,7 @@ class HomePage:
         #Aplicamos los cambios        
         apply_pos_button_element = self.wait.until(EC.element_to_be_clickable(apply_pos_button))
         apply_pos_button_element.click()
+        self.wait = WebDriverWait(self.driver, 30)
     
     def set_journey(self,type):
         """
@@ -101,10 +107,11 @@ class HomePage:
         origin_input_element = self.wait.until(EC.element_to_be_clickable(origin_input))
         origin_input_element.clear()
         origin_input_element.send_keys(key_city) 
-
+        time.sleep(2)
         #Seleccionamos la ciudad origen        
         specific_city_element = self.wait.until(EC.element_to_be_clickable(specific_city))
         specific_city_element.click()
+        time.sleep(2)
 
 
     def select_destination(self,key_city): 
@@ -119,10 +126,11 @@ class HomePage:
             #digitamos el valor del destino
             destination_city_element = self.wait.until(EC.element_to_be_clickable(destination_city))
             destination_city_element.send_keys({key_city})
+            time.sleep(2)
             #Seleccionamos la ciudad destino            
             specific_city_element = self.wait.until(EC.element_to_be_clickable(specific_city))
             specific_city_element.click()
-            
+
 
     def select_passengers(self,number_adult,number_teen,number_child,number_infant):
         """
@@ -208,12 +216,14 @@ class HomePage:
         button_search = (By.ID,"searchButton")
         button_search_element = self.wait.until(EC.element_to_be_clickable(button_search)) 
         button_search_element.click()
-        time.sleep(10)#Se hace una espera por el cambio de página. Esto es una mala practica
+        self.base_page.wait_while_exist_loading()
+        
 
     def select_login_button(self):
         """
         Inicia el proceso de inicio de sesión.
         """
+        self.base_page.wait_while_exist_loading()
         login_button = (By.ID, "auth-component")
         login_button_element = self.wait.until(EC.element_to_be_clickable(login_button))
         login_button_element.click()
@@ -244,6 +254,7 @@ class HomePage:
         origin_button_code_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(origin_button_code)) 
         
         assert capital_city in origin_button_code_element.text, f"Se esperaba '{capital_city}', pero se encontró '{origin_button_code_element.text}'"
+        self.logger.info(f"Correcta validación del pois {capital_city}")
 
     def select_option_nav_bar(self,option,url_submenu):
         """
@@ -269,6 +280,7 @@ class HomePage:
         submenu_option_element.click()
 
         self.logger.info(f"Se accede a la opción {url_submenu}")
+        self.base_page.wait_while_exist_loading()
 
 
     def select_option_footer(self,num_column):
@@ -292,7 +304,7 @@ class HomePage:
                 self.logger.info(f"En la columna número {num_column}, se da click en el enlace con href: {href}")
                 link.click()
                 break #Solo se da clic en el primer elemento. Como es una lista, se rompe el ciclo para que no siga validando
-
+        self.base_page.wait_while_exist_loading()                 
         return href
        
       
