@@ -37,13 +37,13 @@ A partir del uso de python y selenium, se realizan pruebas automatizadas a una p
     Desde la raiz del proyecto ejecutar pytest -s .\test\[nombre_fichero_test].py
     ```bash
     pytest -s .\test\test_case1.py
-    La opción -s me permite ver la salida de logs desde la terminal.
+La opción -s me permite ver la salida de logs desde la terminal.
 
 2. Ejecución paralela
     Desde la raiz del proyecto ejecutar pytest -s -n [numero_workers] .\test\
     ```bash
     pytest -s -n 4 .\test\
-    La opción -n indica la cantidad de ejecutores. Para este caso se utilizarán 4 y se ejecutarán todas las pruebas que se encuentren en el directorio de test.
+La opción -n indica la cantidad de ejecutores. Para este caso se utilizarán 4 y se ejecutarán todas las pruebas que se encuentren en el directorio de test.
     También se puede especificar un solo fichero de test.py
 
 3. Generar reportes con allure
@@ -51,7 +51,7 @@ A partir del uso de python y selenium, se realizan pruebas automatizadas a una p
     ```bash
     pytest -s .\test\test_case5.py --alluredir=allure-results
 
-    La opción --alluredir=allure-results permite almacenar los resultados de las pruebas en el directorio allure-results
+La opción --alluredir=allure-results permite almacenar los resultados de las pruebas en el directorio allure-results
 
 4. Visualizar reportes allure
     Ejecutar el comando 
