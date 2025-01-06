@@ -62,7 +62,7 @@ La opción --alluredir=allure-results permite almacenar los resultados de las pr
 5. Visualizar los registros de los test en base de datos
     Hacer uso del cliente para SQlite, abrir base de datos e indicar el fichero resultados.db que se genera a partir de las ejecuciones de test.
 
-## Tecnologias utilizadas
+## Tecnologías utilizadas
 
 * **Python**: Lenguaje de programación utilizado para las pruebas.
 * **Selenium**: Herramienta para la automatización de pruebas en navegadores web.
