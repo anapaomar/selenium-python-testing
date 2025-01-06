@@ -4,9 +4,10 @@ A partir del uso de python y selenium, se realizan pruebas automatizadas a una p
 
 ## Tabla de Contenidos
 
-1. [Instalación](#instalación)
-2. [Uso](#uso)
-3. [Tecnologías Utilizadas](#tecnologías-utilizadas)
+1. [Requisitos previos](#requisitos-previos)
+2. [Configuración](#configuración)
+3. [Uso](#uso)
+4. [Tecnologías Utilizadas](#tecnologías-utilizadas)
 
 ## Requisitos previos
 1. Se instala la última versión de python desde la [página oficial](https://www.python.org/downloads/). En este caso se utilizó 3.13.1
