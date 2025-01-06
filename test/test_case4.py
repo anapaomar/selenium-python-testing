@@ -1,5 +1,6 @@
 import pytest
 import allure
+import time
 import sqlite3
 from util.logger_config import setup_logger
 
@@ -14,6 +15,8 @@ def setup():
     logger = setup_logger()
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
+    driver.maximize_window()
+    time.sleep(1)
     url = "https://nuxqa4.avtest.ink/"
     #url = "https://nuxqa5.avtest.ink/"
 

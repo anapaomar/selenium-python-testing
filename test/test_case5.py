@@ -1,6 +1,7 @@
 import pytest
 import allure
 import sqlite3
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -11,6 +12,8 @@ from src.pages.home_page import HomePage
 def setup():
     service = Service(ChromeDriverManager().install())  # WebDriverManager se encarga de gestionar el ChromeDriver
     driver = webdriver.Chrome(service=service)
+    driver.maximize_window()
+    time.sleep(1)
     driver.get("https://nuxqa4.avtest.ink/") 
     #driver.get("https://nuxqa5.avtest.ink/")
     yield driver

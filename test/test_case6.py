@@ -1,6 +1,7 @@
 import pytest
 import allure
 import sqlite3
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -15,7 +16,9 @@ logger = setup_logger()
 @pytest.fixture
 def setup():
     service = Service(ChromeDriverManager().install())  # WebDriverManager se encarga de gestionar el ChromeDriver
-    driver = webdriver.Chrome(service=service)    
+    driver = webdriver.Chrome(service=service)
+    driver.maximize_window()
+    time.sleep(1)    
     driver.get(base_url) 
     yield driver
     driver.quit()

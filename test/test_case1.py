@@ -1,5 +1,6 @@
 import pytest
 import allure
+import time
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -15,6 +16,8 @@ from src.pages.seatmap_page import SeatmapPage
 def setup():
     service = Service(ChromeDriverManager().install())  # WebDriverManager se encarga de gestionar el ChromeDriver
     driver = webdriver.Chrome(service=service)
+    driver.maximize_window()
+    time.sleep(1)
     driver.get("https://nuxqa4.avtest.ink/") 
     #driver.get("https://nuxqa5.avtest.ink/")
     yield driver
@@ -54,7 +57,7 @@ def test_booking_one_way(setup):
             homepage.searchFlight()
 
         with allure.step("Seleccionar precio y tipo de vuelo"):
-            flightpage.select_journey_price()
+            flightpage.select_journey_price("One way")
             flightpage.select_flight_type("light")
             flightpage.select_continue()
 

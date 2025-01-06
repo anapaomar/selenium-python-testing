@@ -1,6 +1,7 @@
 import pytest
 import allure
 import sqlite3
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,7 +16,8 @@ def setup():
     # Configura las opciones de Chrome
     service = Service(ChromeDriverManager().install()) 
     driver = webdriver.Chrome(service=service)
-
+    driver.maximize_window()
+    time.sleep(1)
     driver.get("https://nuxqa.avtest.ink//")
     yield driver
     driver.quit()
@@ -50,7 +52,6 @@ def test_login_UAT1(setup):
 
         with allure.step("Rellenar el formulario de inicio de sesión"):
             loginpage.fillin_login_form("21734198706","Lifemiles1")
-            WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
         
         with allure.step("Regresar a la ventana principal"):
             driver.switch_to.window(window_handles[0])
@@ -67,7 +68,7 @@ def test_login_UAT1(setup):
             homepage.searchFlight()
 
         with allure.step("Seleccionar precio y tipo de vuelo"):
-            flightpage.select_journey_price()
+            flightpage.select_journey_price("One way")
             flightpage.select_flight_type("light")
             flightpage.select_continue()
             result_test('test_login_UAT1','PASS')
